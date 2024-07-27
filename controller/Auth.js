@@ -1,8 +1,10 @@
 const crypto = require('crypto');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const { User } = require('../models/User.js');
 const { sanitizeUser } = require('../services/Common.js');
 
-
+const SECRET = 'SECRET';
 
 
 exports.createUser = async function (req, res) {
@@ -16,7 +18,12 @@ exports.createUser = async function (req, res) {
 				if (err) {
 					res.status(400).json(err);
 				} else {
-					res.status(201).json(sanitizeUser(doc));
+					const token = jwt.sign(sanitizeUser(doc), process.env.JWT_SECRET);
+
+					res.cookie('jwt', token, {
+						expires: new Date(Date.now() + 3600000),
+						httpOnly: true
+					}).status(201).json({id: doc.id, role: doc.role});
 				}
 			})
 		})
@@ -26,9 +33,16 @@ exports.createUser = async function (req, res) {
 };
 
 exports.loginUser = async function (req, res) {
-	res.json({ status: 'success' });
+	res.cookie('jwt', req.user.token, {
+		expires: new Date(Date.now() + 3600000),
+		httpOnly: true
+	}).status(201).json({id: req.user.id, role: req.user.role}); 
 };
 
-exports.checkUser = async function (req, res) {
-	res.json(req.user);
-};
+// exports.checkAuth = async function (req, res) {
+// 	if (req.user) {
+// 		res.json(req.user);
+// 	} else {
+// 		res.sendStatus(401);
+// 	}
+// };

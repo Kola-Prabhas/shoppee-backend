@@ -16,17 +16,19 @@ exports.createOrder = async function (req, res) {
 
 
 exports.fetchOrdersByUserId = async function (req, res) {
-	const { userId } = req.params;
+	const { id } = req.user;
+
+	console.log(req.user);
 
 	try {
-		const orders = await Order.find({user: userId});
-
+		const orders = await Order.find({user: id});
 
 		res.status(200).json(orders);
 	} catch (err) {
 		res.status(400).json(err)
 	}
 };
+
 
 exports.fetchAllOrders = async function (req, res) {
 	const condition = {};
@@ -81,6 +83,7 @@ exports.updateOrder = async function (req, res) {
 		res.status(400).json(err)
 	}
 };
+
 
 exports.deleteOrder = async function (req, res) {
 	const { id } = req.params;

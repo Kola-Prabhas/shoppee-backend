@@ -36,10 +36,12 @@ const { User } = require('../models/User.js');
 
 
 exports.fetchUserById = async function (req, res) {
-	const { id } = req.params;
+	const { id } = req.user;
 
 	try {
 		const user = await User.findById(id, 'email role id addresses orders');
+
+		console.log('user in userInfo ', user);
 
 		res.status(200).json(user);
 	} catch (err) {

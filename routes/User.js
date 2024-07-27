@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 
-router.get('/:id', fetchUserById)
+router.get('/own', fetchUserById)
 	.patch('/:id', updateUser)
 
 
