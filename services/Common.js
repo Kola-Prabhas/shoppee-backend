@@ -6,7 +6,7 @@ exports.sanitizeUser = function (user) {
 
 
 exports.isAuth = function (req, res, done) {
-	return passport.authenticate('jwt')
+	return passport.authenticate('jwt', {session: false})
 }
 
 

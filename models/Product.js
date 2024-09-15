@@ -17,10 +17,14 @@ const productSchema = new Schema({
 	deleted: { type: Boolean, default: false }
 });
 
-const virtual = productSchema.virtual('id');
+const virtualId = productSchema.virtual('id');
+const virtualDiscountPrice = productSchema.virtual('discountPrice');
 
-virtual.get(function () {
+virtualId.get(function () {
 	return this._id;
+});
+virtualDiscountPrice.get(function () {
+	return this.price * (1 - this.discountPercentage / 100);
 })
 
 

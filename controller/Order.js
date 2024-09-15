@@ -18,8 +18,6 @@ exports.createOrder = async function (req, res) {
 exports.fetchOrdersByUserId = async function (req, res) {
 	const { id } = req.user;
 
-	console.log(req.user);
-
 	try {
 		const orders = await Order.find({user: id});
 
@@ -32,9 +30,6 @@ exports.fetchOrdersByUserId = async function (req, res) {
 
 exports.fetchAllOrders = async function (req, res) {
 	const condition = {};
-
-	console.log('req.query ', req.query);
-
 
 	if (!req.query.admin) {
 		condition.deleted = {$ne: true};
@@ -75,8 +70,6 @@ exports.updateOrder = async function (req, res) {
 
 	try {
 		const order = await Order.findByIdAndUpdate(id, req.body, { new: true }).populate('user');
-
-		console.log(order);
 
 		res.status(200).json(order);
 	} catch (err) {

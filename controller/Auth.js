@@ -11,8 +11,26 @@ exports.createUser = async function (req, res) {
 	try {
 		const salt = crypto.randomBytes(16);
 		crypto.pbkdf2(req.body.password, salt, 310000, 32, 'sha256', async function (err, hashedPassword) {
+			// Check whether an user with the email already exists
+			const result = await User.findOne({ email: req.body.email });
+
+			if (result) {
+				res.
+					status(400).
+					json({
+						success: false, 
+						message: "User already exists try different email"
+					});
+				
+				return;
+			} 
+
 			const user = new User({ ...req.body, password: hashedPassword, salt });
 			const doc = await user.save();
+
+			const token = jwt.sign(sanitizeUser(doc), process.env.JWT_SECRET);
+
+			
 
 			req.login(sanitizeUser(doc), err => {
 				if (err) {
@@ -22,7 +40,9 @@ exports.createUser = async function (req, res) {
 
 					res.cookie('jwt', token, {
 						expires: new Date(Date.now() + 3600000),
-						httpOnly: true
+						httpOnly: true, // Cookie can't be accessed by JavaScript
+						secure: true, // Ensure this is true if you're using HTTPS
+						sameSite: 'None', // Enable cross-origin cookies
 					}).status(201).json({id: doc.id, role: doc.role});
 				}
 			})
@@ -35,8 +55,10 @@ exports.createUser = async function (req, res) {
 exports.loginUser = async function (req, res) {
 	res.cookie('jwt', req.user.token, {
 		expires: new Date(Date.now() + 3600000),
-		httpOnly: true
-	}).status(201).json({id: req.user.id, role: req.user.role}); 
+		httpOnly: true, // Cookie can't be accessed by JavaScript
+		secure: true, // Ensure this is true if you're using HTTPS
+		sameSite: 'None', // Enable cross-origin cookies
+	}).status(201).json(req.user); 
 };
 
 // exports.checkAuth = async function (req, res) {

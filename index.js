@@ -87,19 +87,23 @@ server.use(session({
 	saveUninitialized: false,
 }));
 server.use(cookieParser());
-server.use(passport.authenticate('session'));
+server.use(passport.initialize());
+server.use(passport.session());
+// server.use(passport.authenticate('session'));
 server.use(cors({
 	exposedHeaders: ['X-Total-Count'],
+	origin: 'http://localhost:3000', // CRA address
+	credentials: true, // Allow credentials (cookies) to be sent
 }))
 
 // routers
-server.use('/products', isAuth(), productsRouter.router);
-server.use('/brands', isAuth(), brandsRouter.router);
-server.use('/categories', isAuth(), categoriesRouter.router);
-server.use('/users', isAuth(), usersRouter.router);
+server.use('/products',isAuth(), productsRouter.router);
+server.use('/brands',isAuth(), brandsRouter.router);
+server.use('/categories',isAuth(), categoriesRouter.router);
+server.use('/users',isAuth(), usersRouter.router);
 server.use('/auth', authRouter.router);
-server.use('/cart', isAuth(), cartRouter.router);
-server.use('/orders', isAuth(), ordersRouter.router);
+server.use('/cart',isAuth(), cartRouter.router);
+server.use('/orders',isAuth(), ordersRouter.router);
 
 
 // passport strategies
@@ -108,14 +112,9 @@ passport.use('local', new LocalStrategy(
 	{ usernameField: 'email' },
 	async function (email, password, done) {
 
-		// console.log('email ', email);
-		// console.log('password ', password);
-
 		try {
 			const user = await User.findOne({ email });
 			
-			// console.log('user in local ', user);
-
 			if (!user) {
 				return done(null, false, { message: 'Invalid credentials' })
 			}
@@ -128,7 +127,11 @@ passport.use('local', new LocalStrategy(
 				const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET);
 
 
-				done(null, { token });
+				done(null, {
+					...sanitizeUser(user),
+					token
+				});
+
 			})
 		} catch (err) {
 			done(err);
@@ -139,19 +142,15 @@ passport.use('local', new LocalStrategy(
 const SECRET = process.env.SECRET;
 
 const opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = SECRET;
 
 
 
 passport.use('jwt', new JwtStrategy(opts, async function (jwt_payload, done) {
-	console.log('jwt ', jwt_payload);
-	
 	try {
 		const user = await User.findById(jwt_payload.id);
-
-		// console.log('user ', user);
 
 		if (!user) {
 			return done(null, false);
@@ -164,11 +163,11 @@ passport.use('jwt', new JwtStrategy(opts, async function (jwt_payload, done) {
 	}
 }));
 
+
 // this creates session variable req.user when called from the callback
 passport.serializeUser(function (user, cb) {
 
 	process.nextTick(function () {
-
 		return cb(null, sanitizeUser(user));
 	});
 });
@@ -176,6 +175,7 @@ passport.serializeUser(function (user, cb) {
 
 // this changes session variable req.user when called from authorized request
 passport.deserializeUser(function (user, cb) {
+
 	process.nextTick(function () {
 		return cb(null, user);
 	});
@@ -201,8 +201,6 @@ server.post("/create-payment-intent", async (req, res) => {
 			enabled: true,
 		},
 	});
-
-	console.log('This code executed!');
 
 	res.send({
 		clientSecret: paymentIntent.client_secret,
