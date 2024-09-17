@@ -175,7 +175,6 @@ passport.serializeUser(function (user, cb) {
 
 // this changes session variable req.user when called from authorized request
 passport.deserializeUser(function (user, cb) {
-
 	process.nextTick(function () {
 		return cb(null, user);
 	});
@@ -206,7 +205,6 @@ server.post("/create-payment-intent", async (req, res) => {
 		clientSecret: paymentIntent.client_secret,
 	});
 });
-
 
 
 main();

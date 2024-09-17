@@ -8,6 +8,6 @@ exports.fetchCategories = async function (req, res) {
 		const categories = await Category.find({});
 		res.status(200).json(categories);
 	} catch (err) {
-		res.staus(400).json(err)
+		res.status(400).json(err)
 	}
 };

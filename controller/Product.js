@@ -80,23 +80,26 @@ exports.fetchAllProducts = async function (req, res) {
 	}
 
 	if (req.query.category) {
+		const categoriesArray = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
 		pipeline.push({
-			$match: { category: req.query.category }
+			$match: { category: {$in: categoriesArray} }
 		});
 
 		countPipeline.push({
-			$match: { category: req.query.category }
+			$match: { category: {$in: categoriesArray} }
 		});
 	}
 
 
 	if (req.query.brand) {
+		const brandsArray = Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand];
+
 		pipeline.push({
-			$match: { brand: req.query.brand }
+			$match: { brand: { $in: brandsArray } }
 		})
 
 		countPipeline.push({
-			$match: { brand: req.query.brand }
+			$match: { brand: { $in: brandsArray } }
 		})
 	}
 
