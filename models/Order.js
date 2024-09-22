@@ -7,6 +7,7 @@ const orderSchema = new Schema({
 	user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 	totalItems: { type: Number },
 	totalPrice: { type: Number },
+	totalDiscountPrice: {type: Number},
 	selectedAddress: { type: Schema.Types.Mixed, required: true },
 	selectedPaymentMethod: { type: String, required: true },
 	status: {type: String, default: 'pending'}

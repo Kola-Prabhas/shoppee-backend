@@ -17,7 +17,7 @@ exports.addToCart = async function (req, res) {
 };
 
 
-exports.fetchItemsByUserId = async function (req, res) {
+exports.fetchCartItemsByUserId = async function (req, res) {
 	const { id } = req.user;
 
 	try {
@@ -30,7 +30,7 @@ exports.fetchItemsByUserId = async function (req, res) {
 };
 
 
-exports.updateCart = async function (req, res) {
+exports.updateCartItem = async function (req, res) {
 	const { id } = req.params;
 
 	try {
@@ -43,7 +43,7 @@ exports.updateCart = async function (req, res) {
 };
 
 
-exports.deleteCart = async function (req, res) {
+exports.deleteCartItem = async function (req, res) {
 	const { id } = req.params;
 
 	try {
@@ -54,3 +54,18 @@ exports.deleteCart = async function (req, res) {
 		res.status(400).json(err)
 	}
 };
+
+
+exports.clearCart = async function (req, res) {
+	const { cartItemIds } = req.body;
+
+	try {
+		for (const id of cartItemIds) {
+			await Cart.findByIdAndDelete(id);
+		}
+
+		res.status(200).json({success: true, message: 'Cart Cleared Successfully'});
+	} catch (e) {
+		res.status(400).json(e);
+	}
+}

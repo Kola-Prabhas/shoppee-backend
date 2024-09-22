@@ -1,4 +1,5 @@
 const { Order } = require('../models/Order.js');
+const { Product } = require('../models/Product.js');
 const { sendMail, generateHtmlInvoice } = require('../services/Common.js');
 
 
@@ -9,6 +10,15 @@ exports.createOrder = async function (req, res) {
 	try {
 		const order = new Order(req.body);
 		const doc = await order.save();
+
+        // Decrease the stock of all items by quantity ordered
+		for (const item of order.items) {
+			const product = await Product.findById(item.product.id);
+
+			product.stock -= item.quantity;
+
+			await product.save();
+		}
 
 		const to = order.selectedAddress.email;
 		const subject = 'Order Placed Successfully from SwiftStore';

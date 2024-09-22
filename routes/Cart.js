@@ -1,15 +1,19 @@
-const { addToCart, fetchItemsByUserId, updateCart, deleteCart } = require('../controller/Cart.js');
+const {
+	addToCart,
+	fetchCartItemsByUserId,
+	updateCartItem,
+	deleteCartItem,
+	clearCart
+} = require('../controller/Cart.js');
 const express = require('express');
-
-
 const router = express.Router();
 
 
-router.get('/', fetchItemsByUserId)
+router.get('/', fetchCartItemsByUserId)
 	.post('/', addToCart)
-	.patch('/:id', updateCart)
-	.delete('/:id', deleteCart);
-
+	.patch('/:id', updateCartItem)
+	.delete('/:id', deleteCartItem)
+	.delete ('/', clearCart);
 
 
 

@@ -23,6 +23,7 @@ const virtualDiscountPrice = productSchema.virtual('discountPrice');
 virtualId.get(function () {
 	return this._id;
 });
+
 virtualDiscountPrice.get(function () {
 	return this.price * (1 - this.discountPercentage / 100);
 })
