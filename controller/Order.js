@@ -1,12 +1,20 @@
 const { Order } = require('../models/Order.js');
+const { sendMail, generateHtmlInvoice } = require('../services/Common.js');
 
 
 
 
 exports.createOrder = async function (req, res) {
+	// const { email } = req.user;
 	try {
 		const order = new Order(req.body);
 		const doc = await order.save();
+
+		const to = order.selectedAddress.email;
+		const subject = 'Order Placed Successfully from SwiftStore';
+		const html = generateHtmlInvoice(order)
+
+		sendMail({to, subject, html})
 
 		res.status(200).json(doc);
 	} catch (err) {

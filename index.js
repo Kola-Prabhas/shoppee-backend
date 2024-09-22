@@ -29,7 +29,6 @@ const { isAuth, sanitizeUser, cookieExtractor } = require('./services/Common');
 
 
 // Stripe Webhook
-
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
 server.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
@@ -97,13 +96,13 @@ server.use(cors({
 }))
 
 // routers
-server.use('/products',isAuth(), productsRouter.router);
-server.use('/brands',isAuth(), brandsRouter.router);
-server.use('/categories',isAuth(), categoriesRouter.router);
-server.use('/users',isAuth(), usersRouter.router);
+server.use('/products', isAuth(), productsRouter.router);
+server.use('/brands', isAuth(), brandsRouter.router);
+server.use('/categories', isAuth(), categoriesRouter.router);
+server.use('/users', isAuth(), usersRouter.router);
 server.use('/auth', authRouter.router);
-server.use('/cart',isAuth(), cartRouter.router);
-server.use('/orders',isAuth(), ordersRouter.router);
+server.use('/cart', isAuth(), cartRouter.router);
+server.use('/orders', isAuth(), ordersRouter.router);
 
 
 // passport strategies
@@ -111,10 +110,9 @@ server.use('/orders',isAuth(), ordersRouter.router);
 passport.use('local', new LocalStrategy(
 	{ usernameField: 'email' },
 	async function (email, password, done) {
-
 		try {
 			const user = await User.findOne({ email });
-			
+
 			if (!user) {
 				return done(null, false, { message: 'Invalid credentials' })
 			}
@@ -193,7 +191,7 @@ server.post("/create-payment-intent", async (req, res) => {
 
 	// Create a PaymentIntent with the order amount and currency
 	const paymentIntent = await stripe.paymentIntents.create({
-		amount: totalAmount*1000,
+		amount: totalAmount * 1000,
 		currency: "inr",
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		automatic_payment_methods: {
@@ -205,7 +203,6 @@ server.post("/create-payment-intent", async (req, res) => {
 		clientSecret: paymentIntent.client_secret,
 	});
 });
-
 
 main();
 

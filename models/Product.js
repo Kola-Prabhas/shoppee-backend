@@ -15,7 +15,7 @@ const productSchema = new Schema({
 	thumbnail: { type: String, required: true },
 	images: { type: [String], required: true },
 	deleted: { type: Boolean, default: false }
-});
+}, { timestamps: true });
 
 const virtualId = productSchema.virtual('id');
 const virtualDiscountPrice = productSchema.virtual('discountPrice');

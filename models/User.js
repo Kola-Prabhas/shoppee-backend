@@ -9,8 +9,9 @@ const userSchema = new Schema({
 	addresses: { type: [Schema.Types.Mixed] },
 	orders: { type: [Schema.Types.ObjectId], ref: 'Order' },
 	name: { type: String },
-	salt: Buffer
-});
+	salt: Buffer,
+	resetPasswordToken: {type: String, default: ''}
+}, { timestamps: true });
 
 const virtual = userSchema.virtual('id');
 
