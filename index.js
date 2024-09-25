@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 
 
@@ -79,7 +80,7 @@ server.post('/webhook', express.raw({ type: 'application/json' }), (request, res
 
 // server.use(express.raw({ type: 'application/json' }))
 server.use(express.json());
-server.use(express.static('build'));
+server.use(express.static(path.resolve(__dirname, 'build')));
 server.use(session({
 	secret: process.env.SESSION_SECRET,
 	resave: false,
@@ -114,12 +115,12 @@ passport.use('local', new LocalStrategy(
 			const user = await User.findOne({ email });
 
 			if (!user) {
-				return done(null, false, { message: 'Invalid credentials' })
+				return done(null, false, { success: false, message: 'Invalid credentials' })
 			}
 
 			crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', async function (err, hashedPassword) {
 				if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
-					return done(null, false, { message: 'Invalid credentials' })
+					return done(null, false, { success: false, message: 'Invalid credentials' })
 				}
 
 				const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET);

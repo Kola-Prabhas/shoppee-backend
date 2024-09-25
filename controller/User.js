@@ -18,8 +18,12 @@ exports.fetchUserById = async function (req, res) {
 exports.updateUser = async function (req, res) {
 	const { id } = req.params;
 
+	const data = req.body;
+
 	try {
-		const user = await User.findByIdAndUpdate(id, req.body, { new: true});
+		await User.findByIdAndUpdate(id, data);
+
+		const user = await User.findById(id);
 
 		res.status(200).json(user);
 	} catch (err) {
