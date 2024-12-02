@@ -165,7 +165,6 @@ passport.use('jwt', new JwtStrategy(opts, async function (jwt_payload, done) {
 
 // this creates session variable req.user when called from the callback
 passport.serializeUser(function (user, cb) {
-
 	process.nextTick(function () {
 		return cb(null, sanitizeUser(user));
 	});

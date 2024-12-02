@@ -6,7 +6,7 @@ exports.fetchUserById = async function (req, res) {
 	const { id } = req.user;
 
 	try {
-		const user = await User.findById(id, 'email role id addresses orders');
+		const user = await User.findById(id, 'name email role id addresses');
 
 		res.status(200).json(user);
 	} catch (err) {
@@ -21,9 +21,7 @@ exports.updateUser = async function (req, res) {
 	const data = req.body;
 
 	try {
-		await User.findByIdAndUpdate(id, data);
-
-		const user = await User.findById(id);
+		const user = await User.findByIdAndUpdate(id, data, {new: true});
 
 		res.status(200).json(user);
 	} catch (err) {

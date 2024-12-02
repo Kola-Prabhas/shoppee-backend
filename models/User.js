@@ -3,12 +3,13 @@ const { Schema } = mongoose;
 
 
 const userSchema = new Schema({
+	name: {type: String, default: 'Anonymous'},
 	email: { type: String, required: true, unique: true },
+	phone: Number,
 	password: { type: Buffer, required: true },
 	role: { type: String, default: 'user' },
 	addresses: { type: [Schema.Types.Mixed] },
 	orders: { type: [Schema.Types.ObjectId], ref: 'Order' },
-	name: { type: String },
 	salt: Buffer,
 	resetPasswordToken: {type: String, default: ''}
 }, { timestamps: true });

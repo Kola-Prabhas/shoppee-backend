@@ -108,7 +108,7 @@ exports.fetchAllProducts = async function (req, res) {
 	try {
 		const result = await Product.aggregate(pipeline);
 		const countResult = await Product.aggregate(countPipeline);
-		const totalItems = countResult[0].totalItems;
+		const totalItems = countResult[0]?.totalItems ?? 0; // when no products found for given filters, countResult is undefined
 
 		res.set('X-Total-Count', totalItems);
 		res.status(200).json(result);
