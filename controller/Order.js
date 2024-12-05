@@ -1,15 +1,22 @@
 const { Order } = require('../models/Order.js');
 const { Product } = require('../models/Product.js');
+const { Cart } = require('../models/Cart.js');
 const { sendMail, generateHtmlInvoice } = require('../services/Common.js');
 
 
-
-
 exports.createOrder = async function (req, res) {
-	// const { email } = req.user;
+	const orderData = req.body;
+	const cartId = req.body.items.id;
+
 	try {
+		if (orderData?.totalItems === 0) {
+			throw new Error('Cannot create an order with no items');
+		}
+
 		const order = new Order(req.body);
 		const doc = await order.save();
+
+		const cart = await Cart.findByIdAndDelete(cartId);
 
         // Decrease the stock of all items by quantity ordered
 		for (const item of order.items) {
@@ -26,9 +33,19 @@ exports.createOrder = async function (req, res) {
 
 		sendMail({to, subject, html})
 
-		res.status(200).json(doc);
+		res.status(200).json({
+			success: true,
+			message: 'Order created successfully',
+			data: { order: doc },
+			error: null,
+		});
 	} catch (err) {
-		res.status(400).json(err)
+		res.status(400).json({
+			success: false,
+			message: err.message,
+			data: null,
+			error: err
+		})
 	}
 };
 
@@ -39,9 +56,22 @@ exports.fetchOrdersByUserId = async function (req, res) {
 	try {
 		const orders = await Order.find({ user: id });
 		
-		res.status(200).json(orders);
-	} catch (err) {
-		res.status(400).json(err)
+		res.status(200).json({
+			success: true,
+			message: 'Orders fetched successfully',
+			data: {
+				orders,
+				totalOrders: orders.length
+			},
+			error: null
+		});
+	} catch (error) {
+		res.status(400).json({
+			success: false,
+			message: err.message,
+			data: null,
+			error
+		})
 	}
 };
 
@@ -55,8 +85,6 @@ exports.fetchAllOrders = async function (req, res) {
 
 	let orders = Order.find(condition);
 	let ordersCount = Order.find(condition);
-
-	
 
 	if (req.query._sort) {
 		orders = orders.sort({ [req.query._sort]: req.query._order })
@@ -72,7 +100,6 @@ exports.fetchAllOrders = async function (req, res) {
 
 	try {
 		const docs = await orders.exec();
-
 		const totalOrders = await ordersCount.count().exec();
 
 		res.set('X-Total-Count', totalOrders);

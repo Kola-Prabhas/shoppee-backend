@@ -9,8 +9,8 @@ const orderSchema = new Schema({
 	totalPrice: { type: Number },
 	totalDiscountPrice: {type: Number},
 	selectedAddress: { type: Schema.Types.Mixed, required: true },
-	selectedPaymentMethod: { type: String, required: true },
-	status: {type: String, default: 'pending'}
+	status: { type: String, default: 'pending' },
+	paymentStatus: { type: String, default: 'unpaid' }
 }, { timestamps: true });
 
 const virtual = orderSchema.virtual('id');

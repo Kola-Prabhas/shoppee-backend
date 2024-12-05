@@ -8,8 +8,8 @@ const userSchema = new Schema({
 	phone: Number,
 	password: { type: Buffer, required: true },
 	role: { type: String, default: 'user' },
-	addresses: { type: [Schema.Types.Mixed] },
 	orders: { type: [Schema.Types.ObjectId], ref: 'Order' },
+	addresses: { type: [Schema.Types.ObjectId], ref: 'Address' },
 	salt: Buffer,
 	resetPasswordToken: {type: String, default: ''}
 }, { timestamps: true });

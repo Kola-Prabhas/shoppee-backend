@@ -22,6 +22,7 @@ const usersRouter = require('./routes/User');
 const authRouter = require('./routes/Auth');
 const cartRouter = require('./routes/Cart');
 const ordersRouter = require('./routes/Order');
+const addressesRouter = require('./routes/Address');
 
 
 
@@ -104,7 +105,7 @@ server.use('/users', isAuth(), usersRouter.router);
 server.use('/auth', authRouter.router);
 server.use('/cart', isAuth(), cartRouter.router);
 server.use('/orders', isAuth(), ordersRouter.router);
-
+server.use('/address', isAuth(), addressesRouter.router);
 
 // passport strategies
 
