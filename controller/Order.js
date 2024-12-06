@@ -1,19 +1,23 @@
 const { Order } = require('../models/Order.js');
 const { Product } = require('../models/Product.js');
+const { Address } = require('../models/Address.js');
 const { Cart } = require('../models/Cart.js');
 const { sendMail, generateHtmlInvoice } = require('../services/Common.js');
 
 
 exports.createOrder = async function (req, res) {
 	const orderData = req.body;
-	const cartId = req.body.items.id;
+	const cartId = orderData.items.id;
+	const email = orderData.email;
+
+	delete orderData.email;
 
 	try {
 		if (orderData?.totalItems === 0) {
 			throw new Error('Cannot create an order with no items');
 		}
 
-		const order = new Order(req.body);
+		const order = new Order(orderData);
 		const doc = await order.save();
 
 		const cart = await Cart.findByIdAndDelete(cartId);
@@ -27,7 +31,7 @@ exports.createOrder = async function (req, res) {
 			await product.save();
 		}
 
-		const to = order.selectedAddress.email;
+		const to = email;
 		const subject = 'Order Placed Successfully from SwiftStore';
 		const html = generateHtmlInvoice(order)
 
@@ -40,6 +44,7 @@ exports.createOrder = async function (req, res) {
 			error: null,
 		});
 	} catch (err) {
+		console.log('error ', err)
 		res.status(400).json({
 			success: false,
 			message: err.message,
@@ -54,7 +59,7 @@ exports.fetchOrdersByUserId = async function (req, res) {
 	const { id } = req.user;
 
 	try {
-		const orders = await Order.find({ user: id });
+		const orders = await Order.find({ user: id }).populate('selectedAddress');
 		
 		res.status(200).json({
 			success: true,
@@ -68,7 +73,7 @@ exports.fetchOrdersByUserId = async function (req, res) {
 	} catch (error) {
 		res.status(400).json({
 			success: false,
-			message: err.message,
+			message: error.message,
 			data: null,
 			error
 		})
@@ -99,7 +104,7 @@ exports.fetchAllOrders = async function (req, res) {
 
 
 	try {
-		const docs = await orders.exec();
+		const docs = await orders.populate('selectedAddress').exec();
 		const totalOrders = await ordersCount.count().exec();
 
 		res.set('X-Total-Count', totalOrders);

@@ -8,7 +8,7 @@ const orderSchema = new Schema({
 	totalItems: { type: Number },
 	totalPrice: { type: Number },
 	totalDiscountPrice: {type: Number},
-	selectedAddress: { type: Schema.Types.Mixed, required: true },
+	selectedAddress: { type: Schema.Types.ObjectId, ref: 'Address', required: true },
 	status: { type: String, default: 'pending' },
 	paymentStatus: { type: String, default: 'unpaid' }
 }, { timestamps: true });
