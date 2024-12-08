@@ -101,7 +101,7 @@ server.use(cors({
 server.use('/products', isAuth(), productsRouter.router);
 server.use('/brands', isAuth(), brandsRouter.router);
 server.use('/categories', isAuth(), categoriesRouter.router);
-server.use('/users', isAuth(), usersRouter.router);
+server.use('/user', isAuth(), usersRouter.router);
 server.use('/auth', authRouter.router);
 server.use('/cart', isAuth(), cartRouter.router);
 server.use('/orders', isAuth(), ordersRouter.router);
@@ -116,12 +116,18 @@ passport.use('local', new LocalStrategy(
 			const user = await User.findOne({ email });
 
 			if (!user) {
-				return done(null, false, { success: false, message: 'Invalid credentials' })
+				return done(null, false, {
+					success: false,
+					message: 'No account found with the given email!',
+				})
 			}
 
 			crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', async function (err, hashedPassword) {
 				if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
-					return done(null, false, { success: false, message: 'Invalid credentials' })
+					return done(null, false, {
+						success: false,
+						message: 'Incorrect password!',
+					})
 				}
 
 				const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET);
