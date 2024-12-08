@@ -125,9 +125,24 @@ exports.fetchProductById = async function (req, res) {
 
 	try {
 		const product = await Product.findById(id);
-		res.status(200).json(product);
+
+		if (!product) {
+			throw new Error('Incorrect ProductId. Product not found with given Id');
+		}
+
+		res.status(200).json({
+			success: true,
+			message: 'Product fetched successfully',
+			data: { product },
+			error: null,
+		});
 	} catch (err) {
-		res.status(400).json(err);
+		res.status(400).json({
+			success: true,
+			message: err.message,
+			data: null,
+			error: err
+		});
 	}
 }
 
@@ -136,9 +151,23 @@ exports.updateProduct = async function (req, res) {
 
 	try {
 		const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
-		res.status(200).json(product);
+
+		if (!product) {
+			throw new Error('Incorrect ProductId. Product not found with given Id');
+		}
+
+		res.status(200).json({
+			success: true,
+			message: 'Product updated successfully',
+			data: { product },
+			error: null,
+		});
 	} catch (err) {
-		console.log(err)
-		res.status(400).json(err);
+		res.status(400).json({
+			success: true,
+			message: err.message,
+			data: null,
+			error: err
+		});
 	}
 }
