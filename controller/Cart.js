@@ -4,12 +4,9 @@ const { Cart } = require('../models/Cart.js');
 
 exports.addToCart = async function (req, res) {
 	try {
-		const { user, session } = req;
-		const userId = user ? user.id : null;
+		const { user } = req;
+		const userId = user.id;
 
-		if (!userId) {
-			session.cart = session.cart || [];
-		}
 
 		const cartItemData = { ...req.body, user: userId };
 		const cartItem = new Cart(cartItemData);
@@ -17,11 +14,8 @@ exports.addToCart = async function (req, res) {
 
 		const populatedItem = await Cart.findById(savedItem._id)
 			.populate('product')
-			.populate(userId ? 'user' : '');
+			.populate('user');
 
-		if (!userId) {
-			session.cart.push(populatedItem);
-		}
 
 		res.status(200).json({
 			success: true,
@@ -42,25 +36,15 @@ exports.addToCart = async function (req, res) {
 
 
 exports.fetchCartItemsByUserId = async function (req, res) {
-	const {
-		user,
-		session
-	} = req;
+	const { user } = req;
 
-	const id = user?.id;
+	const id = user.id;
 
 	try {
-		let cart;
+		const cart = await Cart.find({ user: id })
+			.populate('product')
+			.populate('user');
 
-		if (user) {
-			cart = await Cart.find({ user: id })
-				.populate('product')
-				.populate('user');
-		} else {
-			cart = session.cart;
-
-		}
-		
 		res.status(200).json({
 			success: true,
 			message: 'Cart items fetched successfully',
@@ -82,7 +66,6 @@ exports.updateCartItem = async function (req, res) {
 	const { id } = req.params;
 	const {
 		user,
-		session,
 		body
 	} = req;
 
@@ -91,7 +74,7 @@ exports.updateCartItem = async function (req, res) {
 			id,
 			body,
 			{ new: true }
-		).populate('product').populate(user ? 'user' : '');
+		).populate('product').populate('user');
 
 		if (!cartItem) {
 			return res.status(404).json({
@@ -104,8 +87,6 @@ exports.updateCartItem = async function (req, res) {
 			});
 		}
 
-		const sessionItem = session.cart.find(item => item.id === cartItem.id);
-		sessionItem.quantity = body.quantity;
 
 		res.status(200).json({
 			success: true,

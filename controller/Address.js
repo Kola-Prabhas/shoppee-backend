@@ -51,8 +51,6 @@ exports.addUserAddress = async (req, res) => {
 			error: null
 		});
 	} catch (error) {
-		console.log('error ', error);
-
 		res.status(500).json({
 			success: false,
 			message: error.message,
@@ -110,8 +108,6 @@ exports.updateUserAddress = async (req, res) => {
 		if (!updatedAddress) {
 			throw new Error('Address not found');
 		}
-
-		console.log('updatedAddress ', updatedAddress);
 
 		res.status(200).json({
 			success: true,

@@ -113,7 +113,6 @@ exports.fetchAllProducts = async function (req, res) {
 		res.set('X-Total-Count', totalItems);
 		res.status(200).json(result);
 	} catch (e) {
-		console.log('error ', e);
 		res.status(400).json(e);
 	}
 };

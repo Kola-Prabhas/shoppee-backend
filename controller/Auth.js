@@ -142,14 +142,10 @@ exports.resetPasswordRequest = async function (req, res) {
 exports.resetPassword = async function (req, res) {
 	const { email, password, token } = req.body;
 
-	console.log('email ', email);
-
 	try {
 		const user = await User.findOne({ email });
 
 		if (!user) {
-			console.log('user ', user);
-
 			throw new Error("Account not found with the given email");
 		}
 
