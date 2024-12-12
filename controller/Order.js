@@ -12,6 +12,7 @@ exports.createOrder = async function (req, res) {
 
 	delete orderData.email;
 
+
 	try {
 		if (orderData?.totalItems === 0) {
 			throw new Error('Cannot create an order with no items');
@@ -59,13 +60,19 @@ exports.fetchOrdersByUserId = async function (req, res) {
 	const { id } = req.user;
 
 	try {
-		const orders = await Order.find({ user: id }).populate('selectedAddress');
+		let orders = Order.find({ user: id });
+
+		if (req.query._sort) {
+			orders = orders.sort({ [req.query._sort]: req.query._order })
+		}
+
+		const docs = await orders.populate('selectedAddress').exec();
 		
 		res.status(200).json({
 			success: true,
 			message: 'Orders fetched successfully',
 			data: {
-				orders,
+				orders: docs,
 				totalOrders: orders.length
 			},
 			error: null

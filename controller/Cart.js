@@ -3,42 +3,68 @@ const { Cart } = require('../models/Cart.js');
 
 
 exports.addToCart = async function (req, res) {
-	const { id } = req.user;
-
 	try {
-		const cartItem = new Cart({ ...req.body, user: id });
-		const doc = await cartItem.save();
-		const item = await Cart.findById(doc._id).populate('product').populate('user');
+		const { user, session } = req;
+		const userId = user ? user.id : null;
+
+		if (!userId) {
+			session.cart = session.cart || [];
+		}
+
+		const cartItemData = { ...req.body, user: userId };
+		const cartItem = new Cart(cartItemData);
+		const savedItem = await cartItem.save();
+
+		const populatedItem = await Cart.findById(savedItem._id)
+			.populate('product')
+			.populate(userId ? 'user' : '');
+
+		if (!userId) {
+			session.cart.push(populatedItem);
+		}
 
 		res.status(200).json({
 			success: true,
-			message: `${item.product.title} added to cart successfully`,
-			data: {item},
-			error: null
+			message: `${populatedItem.product.title} added to cart successfully`,
+			data: { item: populatedItem },
+			error: null,
 		});
-
-
 	} catch (err) {
 		res.status(400).json({
 			success: false,
 			message: err.message,
 			data: null,
-			error: err
-		})
+			error: err,
+		});
 	}
 };
 
 
+
 exports.fetchCartItemsByUserId = async function (req, res) {
-	const { id } = req.user;
+	const {
+		user,
+		session
+	} = req;
+
+	const id = user?.id;
 
 	try {
-		const cart = await Cart.find({user: id}).populate('product').populate('user');
+		let cart;
 
+		if (user) {
+			cart = await Cart.find({ user: id })
+				.populate('product')
+				.populate('user');
+		} else {
+			cart = session.cart;
+
+		}
+		
 		res.status(200).json({
 			success: true,
 			message: 'Cart items fetched successfully',
-			data: {cart},
+			data: { cart },
 			error: null
 		});
 	} catch (err) {
@@ -54,13 +80,18 @@ exports.fetchCartItemsByUserId = async function (req, res) {
 
 exports.updateCartItem = async function (req, res) {
 	const { id } = req.params;
+	const {
+		user,
+		session,
+		body
+	} = req;
 
 	try {
 		const cartItem = await Cart.findByIdAndUpdate(
 			id,
-			req.body,
+			body,
 			{ new: true }
-		).populate('product').populate('user');
+		).populate('product').populate(user ? 'user' : '');
 
 		if (!cartItem) {
 			return res.status(404).json({
@@ -72,6 +103,9 @@ exports.updateCartItem = async function (req, res) {
 				}
 			});
 		}
+
+		const sessionItem = session.cart.find(item => item.id === cartItem.id);
+		sessionItem.quantity = body.quantity;
 
 		res.status(200).json({
 			success: true,

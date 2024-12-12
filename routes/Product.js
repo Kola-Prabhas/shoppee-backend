@@ -1,15 +1,21 @@
-const { fetchAllProducts, fetchProductById, updateProduct, createProduct, fetchProducts } = require('../controller/Product.js');
+const {
+	fetchAllProducts,
+	fetchProductById,
+	updateProduct,
+	createProduct,
+} = require('../controller/Product.js');
+const { isAuth } = require('../services/Common');
+
 const express = require('express');
 
 
 const router = express.Router();
 
 
-router.post('/', createProduct)
+router.post('/', isAuth(), createProduct)
 	.get('/', fetchAllProducts)
-	// .get('/pipeline', fetchProducts)
 	.get('/:id', fetchProductById)
-	.patch('/:id', updateProduct);
+	.patch('/:id', isAuth(), updateProduct);
 
 
 

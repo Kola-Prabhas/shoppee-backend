@@ -98,9 +98,9 @@ server.use(cors({
 }))
 
 // routers
-server.use('/products', isAuth(), productsRouter.router);
-server.use('/brands', isAuth(), brandsRouter.router);
-server.use('/categories', isAuth(), categoriesRouter.router);
+server.use('/products', productsRouter.router);
+server.use('/brands', brandsRouter.router);
+server.use('/categories', categoriesRouter.router);
 server.use('/user', isAuth(), usersRouter.router);
 server.use('/auth', authRouter.router);
 server.use('/cart', isAuth(), cartRouter.router);
@@ -198,7 +198,7 @@ server.post("/create-payment-intent", async (req, res) => {
 
 	// Create a PaymentIntent with the order amount and currency
 	const paymentIntent = await stripe.paymentIntents.create({
-		amount: Math.round(totalAmount * 1000),
+		amount: Math.round(totalAmount * 100),
 		currency: "usd",
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		automatic_payment_methods: {

@@ -5,7 +5,6 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
 	name: {type: String, default: 'Anonymous'},
 	email: { type: String, required: true, unique: true },
-	phone: Number,
 	password: { type: Buffer, required: true },
 	role: { type: String, default: 'user' },
 	orders: { type: [Schema.Types.ObjectId], ref: 'Order' },
