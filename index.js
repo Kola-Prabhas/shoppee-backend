@@ -98,14 +98,18 @@ server.use(cors({
 }))
 
 // routers
-server.use('/products', productsRouter.router);
-server.use('/brands', brandsRouter.router);
-server.use('/categories', categoriesRouter.router);
-server.use('/user', isAuth(), usersRouter.router);
-server.use('/auth', authRouter.router);
-server.use('/cart', isAuth(), cartRouter.router);
-server.use('/orders', isAuth(), ordersRouter.router);
-server.use('/address', isAuth(), addressesRouter.router);
+server.use('/api/products', productsRouter.router);
+server.use('/api/brands', brandsRouter.router);
+server.use('/api/categories', categoriesRouter.router);
+server.use('/api/user', isAuth(), usersRouter.router);
+server.use('/api/auth', authRouter.router);
+server.use('/api/cart', isAuth(), cartRouter.router);
+server.use('/api/orders', isAuth(), ordersRouter.router);
+server.use('/api/address', isAuth(), addressesRouter.router);
+
+server.get('*', (req, res) => {
+	res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+});
 
 // passport strategies
 
