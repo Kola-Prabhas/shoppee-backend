@@ -197,7 +197,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 
 
-server.post("/create-payment-intent", async (req, res) => {
+server.post("/api/create-payment-intent", async (req, res) => {
 	const { totalAmount } = req.body;
 
 	// Create a PaymentIntent with the order amount and currency
