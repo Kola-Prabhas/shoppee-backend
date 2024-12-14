@@ -229,7 +229,6 @@ async function main() {
 }
 
 
-// server.listen(process.env.PORT, () => {
-// 	console.log('server started at port ', process.env.PORT);
-// })
-module.exports = server;
+server.listen(process.env.PORT, () => {
+	console.log('server started at port ', process.env.PORT);
+})
