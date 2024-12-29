@@ -93,7 +93,7 @@ server.use(passport.session());
 // server.use(passport.authenticate('session'));
 server.use(cors({
 	exposedHeaders: ['X-Total-Count'],
-	// origin: 'http://localhost:3000', // CRA address
+	origin: 'http://localhost:3000', // CRA address
 	credentials: true, // Allow credentials (cookies) to be sent
 }))
 
@@ -220,10 +220,7 @@ main();
 
 async function main() {
 	try {
-		mongoose.connect(process.env.MONGODB_URL, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true
-		});
+		await mongoose.connect(process.env.MONGODB_URL);
 
 		console.log("Connected to database successfully!");
 	} catch (e) {
