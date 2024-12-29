@@ -1,6 +1,8 @@
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 
+const frontendUrl = process.env.FRONTEND_URL;
+
 exports.sanitizeUser = function (user) {
 	return {id: user.id, role: user.role}
 }
@@ -183,7 +185,7 @@ exports.generateHtmlInvoice = function (order) {
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td align="center" valign="top" style="padding: 36px 24px;">
-                            <a href="https://www.TrendCart.com" target="_blank" style="display: inline-block;">
+                            <a href=${frontendUrl} target="_blank" style="display: inline-block;">
                                 <img src="logo" alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
                             </a>
                         </td>

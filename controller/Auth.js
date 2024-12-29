@@ -7,7 +7,7 @@ const passport = require('passport');
 
 
 const SECRET = 'SECRET';
-
+const frontendUrl = process.env.FRONTEND_URL;
 
 exports.createUser = async function (req, res) {
 	const { email, password } = req.body;
@@ -116,7 +116,7 @@ exports.resetPasswordRequest = async function (req, res) {
 		user.resetPasswordToken = token;
 		await user.save();
 
-		const resetPasswordPage = '/reset-password?email=' + email + '&token=' + token;
+		const resetPasswordPage = frontendUrl + '/reset-password?email=' + email + '&token=' + token;
 		const subject = 'SwiftStore Reset Password Link';
 		const html = `<p>Click <a href=${resetPasswordPage}>here</a> to reset your password for SwiftStore Account`
 
