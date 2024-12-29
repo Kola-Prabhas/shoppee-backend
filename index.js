@@ -93,7 +93,7 @@ server.use(passport.session());
 // server.use(passport.authenticate('session'));
 server.use(cors({
 	exposedHeaders: ['X-Total-Count'],
-	origin: 'http://localhost:3000', // CRA address
+	origin: process.env.FRONTEND_URL, // CRA address
 	credentials: true, // Allow credentials (cookies) to be sent
 }))
 
